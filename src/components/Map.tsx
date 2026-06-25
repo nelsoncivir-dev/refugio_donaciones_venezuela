@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, CircleMarker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { ReportLocation } from '../types';
 
@@ -17,61 +17,16 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom icons
-const shelterIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const affectedIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const donationIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const transportIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const wifiIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const collectionCenterIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
+const getColorForType = (type: string) => {
+  switch (type) {
+    case 'shelter': return '#16a34a'; // green-600
+    case 'donation': return '#2563eb'; // blue-600
+    case 'transport': return '#9333ea'; // purple-600
+    case 'wifi': return '#ea580c'; // orange-600
+    case 'collection_center': return '#4f46e5'; // indigo-600
+    default: return '#dc2626'; // red-600 (missing_person / affected)
+  }
+};
 
 interface MapProps {
   locations: ReportLocation[];
@@ -112,10 +67,16 @@ export default function Map({ locations, onMapClick, selectedLocation, onClaimDo
       )}
 
       {locations.map((loc) => (
-        <Marker 
+        <CircleMarker 
           key={loc.id} 
-          position={[loc.lat, loc.lng]}
-          icon={loc.type === 'shelter' ? shelterIcon : loc.type === 'donation' ? donationIcon : loc.type === 'transport' ? transportIcon : loc.type === 'wifi' ? wifiIcon : loc.type === 'collection_center' ? collectionCenterIcon : affectedIcon}
+          center={[loc.lat, loc.lng]}
+          radius={8}
+          pathOptions={{ 
+            color: getColorForType(loc.type),
+            fillColor: getColorForType(loc.type),
+            fillOpacity: 0.8,
+            weight: 2
+          }}
         >
           <Popup>
             <div className="p-1 max-w-[250px]">
@@ -123,8 +84,8 @@ export default function Map({ locations, onMapClick, selectedLocation, onClaimDo
                 <img src={loc.photo} alt="Evidencia" className="w-full h-24 object-cover rounded-md mb-2 border border-gray-200" />
               )}
               <h3 className="font-bold text-lg mb-1 leading-tight">{loc.title}</h3>
-              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white mb-2 ${loc.type === 'shelter' ? 'bg-green-600' : loc.type === 'donation' ? 'bg-blue-600' : loc.type === 'transport' ? 'bg-purple-600' : loc.type === 'collection_center' ? 'bg-indigo-600' : 'bg-red-600'}`}>
-                {loc.type === 'shelter' ? 'Refugio Disponible' : loc.type === 'donation' ? 'Donación / Insumos' : loc.type === 'transport' ? 'Transporte' : loc.type === 'collection_center' ? 'Centro de Acopio' : 'Zona Afectada'}
+              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white mb-2 ${loc.type === 'shelter' ? 'bg-green-600' : loc.type === 'donation' ? 'bg-blue-600' : loc.type === 'transport' ? 'bg-purple-600' : loc.type === 'collection_center' ? 'bg-indigo-600' : loc.type === 'wifi' ? 'bg-orange-600' : 'bg-red-600'}`}>
+                {loc.type === 'shelter' ? 'Refugio Disponible' : loc.type === 'donation' ? 'Donación / Insumos' : loc.type === 'transport' ? 'Transporte' : loc.type === 'collection_center' ? 'Centro de Acopio' : loc.type === 'wifi' ? 'Centro WiFi' : 'Persona Desaparecida'}
               </span>
               <p className="text-sm mb-2 text-gray-700 leading-snug">{loc.description}</p>
               
@@ -148,7 +109,7 @@ export default function Map({ locations, onMapClick, selectedLocation, onClaimDo
               )}
             </div>
           </Popup>
-        </Marker>
+        </CircleMarker>
       ))}
     </MapContainer>
   );
