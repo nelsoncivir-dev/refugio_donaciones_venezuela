@@ -614,7 +614,7 @@ export default function App() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest mt-3 border-t border-slate-100 pt-3">
           <p className="text-center">Desarrollado por Power AI Solutions LLC • Todos los derechos reservados</p>
           <div className="flex flex-wrap gap-3 sm:gap-6 justify-center">
-            <span className="text-slate-500 text-center">Más información: +412 2274541</span>
+            <span className="text-slate-500 text-center">Más información: poweraisolutionsllc@gmail.com</span>
             <span className="text-red-600 flex items-center justify-center gap-1"><AlertTriangle className="w-3 h-3"/> Línea Nacional: 911 / 171</span>
           </div>
         </div>
