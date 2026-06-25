@@ -32,6 +32,7 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
     referencia: ''
   });
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +75,27 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
-          setPhoto(canvas.toDataURL('image/jpeg', 0.7));
+          const base64Image = canvas.toDataURL('image/jpeg', 0.7);
+          setPhoto(base64Image);
+
+          if (type === 'missing_person') {
+            setIsExtracting(true);
+            fetch('/api/gemini/extract-missing-person', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image: base64Image })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data && !data.error) {
+                if (data.title) setTitle(data.title);
+                if (data.description) setDescription(data.description);
+                if (data.contact) setContact(data.contact);
+              }
+            })
+            .catch(err => console.error("Error extracting data:", err))
+            .finally(() => setIsExtracting(false));
+          }
         };
         img.src = reader.result as string;
       };
@@ -204,8 +225,17 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
       setAddressFields({ estado: '', municipio: '', parroquia: '', calle: '', referencia: '' });
       onClose();
     } catch (err) {
-      console.error(err);
-      alert("Hubo un error al guardar la información. Por favor intenta nuevamente.");
+      console.error("Submit error details:", err);
+      let errMsg = "Hubo un error al guardar la información. Por favor intenta nuevamente.";
+      if (err instanceof Error) {
+        try {
+           const parsed = JSON.parse(err.message);
+           errMsg += `\nDetalles: ${parsed.error}`;
+        } catch(e) {
+           errMsg += `\nDetalles: ${err.message}`;
+        }
+      }
+      alert(errMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -460,7 +490,7 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
               
               {photo ? (
                 <div className="relative rounded-lg overflow-hidden border border-slate-200">
-                  <img src={photo} alt="Evidencia" className="w-full h-32 object-cover" />
+                  <img src={photo} alt="Evidencia" className={`w-full h-32 object-cover ${isExtracting ? 'opacity-50' : ''}`} />
                   <button 
                     type="button" 
                     onClick={() => setPhoto(null)}
@@ -468,6 +498,13 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
                   >
                     <X className="w-4 h-4" />
                   </button>
+                  {isExtracting && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                       <span className="bg-black/70 text-white px-3 py-1 rounded-lg text-xs font-bold animate-pulse">
+                         Extrayendo datos...
+                       </span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <button 
