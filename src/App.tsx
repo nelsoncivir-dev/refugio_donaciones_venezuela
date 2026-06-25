@@ -12,13 +12,19 @@ import { motion } from 'framer-motion';
 export default function App() {
   const [locations, setLocations] = useState<ReportLocation[]>([]); // state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isCollectionCenterDialogOpen, setIsCollectionCenterDialogOpen] = useState(false);
+  const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
+  const [actionMenuType, setActionMenuType] = useState<LocationType>('shelter');
   const [dialogPreselectedType, setDialogPreselectedType] = useState<LocationType>('shelter');
   const [selectedCoords, setSelectedCoords] = useState<{lat: number, lng: number} | null>(null);
   const [filter, setFilter] = useState<'all' | 'shelter' | 'missing_person' | 'donation' | 'transport' | 'wifi' | 'collection_center'>('all');
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [missingSearchQuery, setMissingSearchQuery] = useState('');
+  const [collectionSearchQuery, setCollectionSearchQuery] = useState('');
+  const [shelterSearchQuery, setShelterSearchQuery] = useState('');
+  const [donationSearchQuery, setDonationSearchQuery] = useState('');
+  const [transportSearchQuery, setTransportSearchQuery] = useState('');
+  const [wifiSearchQuery, setWifiSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [isSearchingMap, setIsSearchingMap] = useState(false);
 
@@ -187,16 +193,17 @@ export default function App() {
     missing: locations.filter(l => l.type === 'missing_person').length,
     donations: locations.filter(l => l.type === 'donation').length,
     transports: locations.filter(l => l.type === 'transport').length,
-    wifi: locations.filter(l => l.type === 'wifi').length
+    wifi: locations.filter(l => l.type === 'wifi').length,
+    collection_centers: locations.filter(l => l.type === 'collection_center').length
   };
 
   return (
-    <div className="bg-[#f8fafc] text-slate-900 flex flex-col min-h-screen p-4 md:p-6 font-sans max-w-screen-2xl mx-auto w-full">
-      <header className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4 shrink-0 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+    <div className="bg-slate-100 text-slate-900 flex flex-col min-h-screen p-4 md:p-6 font-sans max-w-screen-2xl mx-auto w-full">
+      <header className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4 shrink-0 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-blue-600 to-red-600 blur-md opacity-70 rounded-xl"></div>
-            <div className="relative w-14 h-14 bg-gradient-to-b from-[#FCE300] via-[#0038A8] to-[#CE1126] rounded-xl flex items-center justify-center text-white font-black text-3xl shadow-lg border border-white/20">V</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-blue-500 to-red-600 blur-lg opacity-80 rounded-xl"></div>
+            <div className="relative w-14 h-14 bg-gradient-to-br from-yellow-400 via-blue-500 to-red-600 rounded-xl flex items-center justify-center text-white font-black text-3xl shadow-[0_0_15px_rgba(250,204,21,0.6)] border border-white/30">V</div>
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight">Red de Ayuda <span className="text-red-600">Venezuela</span></h1>
@@ -263,7 +270,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setIsCollectionCenterDialogOpen(true)}
+            onClick={() => {
+              setActionMenuType('collection_center');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-indigo-600 border-2 border-indigo-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -278,7 +288,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleActionClick('shelter')}
+            onClick={() => {
+              setActionMenuType('shelter');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-green-600 border-2 border-green-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -293,7 +306,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleActionClick('donation')}
+            onClick={() => {
+              setActionMenuType('donation');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-blue-600 border-2 border-blue-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -308,7 +324,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleActionClick('transport')}
+            onClick={() => {
+              setActionMenuType('transport');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-purple-600 border-2 border-purple-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -323,7 +342,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleActionClick('wifi')}
+            onClick={() => {
+              setActionMenuType('wifi');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-orange-600 border-2 border-orange-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -338,7 +360,10 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleActionClick('missing_person')}
+            onClick={() => {
+              setActionMenuType('missing_person');
+              setIsActionMenuOpen(true);
+            }}
             className="bg-red-600 border-2 border-red-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -403,43 +428,43 @@ export default function App() {
               <div className="absolute bottom-6 left-6 flex gap-2 z-[1000] pointer-events-none flex-wrap">
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('all'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'all' ? 'bg-slate-800 text-white border-slate-900' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'all' ? 'bg-slate-800 text-white border-slate-900' : 'bg-white border-slate-400 text-slate-700 hover:bg-slate-50'}`}
                 >
                   Todos
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('missing_person'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'missing_person' ? 'bg-red-600 text-white border-red-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'missing_person' ? 'bg-red-600 text-white border-red-700' : 'bg-white border-red-500 text-red-700 hover:bg-red-50'}`}
                 >
                   Desaparecidos
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('shelter'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'shelter' ? 'bg-green-600 text-white border-green-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'shelter' ? 'bg-green-600 text-white border-green-700' : 'bg-white border-green-500 text-green-700 hover:bg-green-50'}`}
                 >
                   Refugios
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('donation'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'donation' ? 'bg-blue-600 text-white border-blue-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'donation' ? 'bg-blue-600 text-white border-blue-700' : 'bg-white border-blue-500 text-blue-700 hover:bg-blue-50'}`}
                 >
                   Donaciones
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('transport'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'transport' ? 'bg-purple-600 text-white border-purple-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'transport' ? 'bg-purple-600 text-white border-purple-700' : 'bg-white border-purple-500 text-purple-700 hover:bg-purple-50'}`}
                 >
                   Transporte
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('wifi'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'wifi' ? 'bg-orange-600 text-white border-orange-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'wifi' ? 'bg-orange-600 text-white border-orange-700' : 'bg-white border-orange-500 text-orange-700 hover:bg-orange-50'}`}
                 >
                   WiFi
                 </span>
                 <span 
                   onClick={(e) => { e.stopPropagation(); setFilter('collection_center'); }} 
-                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'collection_center' ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border-2 transition-colors ${filter === 'collection_center' ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white border-indigo-500 text-indigo-700 hover:bg-indigo-50'}`}
                 >
                   Acopio
                 </span>
@@ -461,6 +486,7 @@ export default function App() {
                 <h4 className="text-2xl sm:text-3xl font-bold">{locations.length}</h4>
               </div>
               <div className="flex flex-col items-end gap-1 text-xs text-slate-300 font-medium">
+                <span className="flex items-center gap-2"><span className="w-2 h-2 bg-indigo-400 rounded-full"></span> {stats.collection_centers} Centros de Acopio</span>
                 <span className="flex items-center gap-2"><span className="w-2 h-2 bg-green-400 rounded-full"></span> {stats.shelters} Refugios</span>
                 <span className="flex items-center gap-2"><span className="w-2 h-2 bg-blue-400 rounded-full"></span> {stats.donations} Donaciones</span>
                 <span className="flex items-center gap-2"><span className="w-2 h-2 bg-purple-400 rounded-full"></span> {stats.transports} Transportes</span>
@@ -556,7 +582,7 @@ export default function App() {
       </div>
 
       {/* Buscador de Personas Desaparecidas */}
-      <div className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+      <div id="missing-person-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center shrink-0">
@@ -621,6 +647,336 @@ export default function App() {
         </div>
       </div>
 
+      {/* Buscador de Centros de Acopio */}
+      <div id="collection-center-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center shrink-0">
+              <Building className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Buscador de Centros de Acopio</h2>
+              <p className="text-sm text-slate-500">Busca por nombre, descripción, estado, municipio o localidad.</p>
+            </div>
+          </div>
+          <div className="w-full md:w-96 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar centro de acopio..." 
+              value={collectionSearchQuery}
+              onChange={(e) => setCollectionSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {locations
+            .filter(l => l.type === 'collection_center' && (
+              !collectionSearchQuery || 
+              l.title.toLowerCase().includes(collectionSearchQuery.toLowerCase()) || 
+              l.description.toLowerCase().includes(collectionSearchQuery.toLowerCase()) ||
+              (l.address && l.address.toLowerCase().includes(collectionSearchQuery.toLowerCase()))
+            ))
+            .slice(0, collectionSearchQuery ? undefined : 20)
+            .map((loc) => (
+              <div key={loc.id} className="border border-indigo-100 rounded-xl p-4 flex flex-col justify-between bg-indigo-50/30 hover:bg-indigo-50/50 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2">{loc.title}</h3>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-3">{loc.description}</p>
+                </div>
+                <div className="flex flex-col gap-2 mt-auto">
+                  {loc.address && (
+                    <div className="flex gap-1 items-start text-xs text-slate-500 bg-white/50 p-2 rounded">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-indigo-400" />
+                      <span className="line-clamp-2">{loc.address}</span>
+                    </div>
+                  )}
+                  {loc.contact && (
+                    <div className="flex gap-1 items-center text-xs text-slate-500">
+                      <span className="font-semibold">Contacto:</span> {loc.contact}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">{new Date(loc.createdAt).toLocaleDateString()} {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+              </div>
+            ))}
+          {locations.filter(l => l.type === 'collection_center').length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 italic">No hay centros de acopio registrados.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Buscador de Refugios */}
+      <div id="shelter-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+              <Home className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Buscador de Refugios</h2>
+              <p className="text-sm text-slate-500">Busca refugios por nombre, descripción o ubicación.</p>
+            </div>
+          </div>
+          <div className="w-full md:w-96 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar refugio..." 
+              value={shelterSearchQuery}
+              onChange={(e) => setShelterSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {locations
+            .filter(l => l.type === 'shelter' && (
+              !shelterSearchQuery || 
+              l.title.toLowerCase().includes(shelterSearchQuery.toLowerCase()) || 
+              l.description.toLowerCase().includes(shelterSearchQuery.toLowerCase()) ||
+              (l.address && l.address.toLowerCase().includes(shelterSearchQuery.toLowerCase()))
+            ))
+            .slice(0, shelterSearchQuery ? undefined : 20)
+            .map((loc) => (
+              <div key={loc.id} className="border border-green-100 rounded-xl p-4 flex flex-col justify-between bg-green-50/30 hover:bg-green-50/50 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-green-500" />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2">{loc.title}</h3>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-3">{loc.description}</p>
+                </div>
+                <div className="flex flex-col gap-2 mt-auto">
+                  {loc.capacity && (
+                     <div className="flex gap-1 items-center text-xs text-green-700 bg-green-100 p-1 px-2 rounded-full w-max font-bold mb-1">
+                       Cupos: {loc.capacity}
+                     </div>
+                  )}
+                  {loc.address && (
+                    <div className="flex gap-1 items-start text-xs text-slate-500 bg-white/50 p-2 rounded">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-green-400" />
+                      <span className="line-clamp-2">{loc.address}</span>
+                    </div>
+                  )}
+                  {loc.contact && (
+                    <div className="flex gap-1 items-center text-xs text-slate-500">
+                      <span className="font-semibold">Contacto:</span> {loc.contact}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">{new Date(loc.createdAt).toLocaleDateString()} {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+              </div>
+            ))}
+          {locations.filter(l => l.type === 'shelter').length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 italic">No hay refugios registrados.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Buscador de Donaciones */}
+      <div id="donation-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+              <Package className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Buscador de Donaciones</h2>
+              <p className="text-sm text-slate-500">Busca donaciones por tipo, descripción o ubicación.</p>
+            </div>
+          </div>
+          <div className="w-full md:w-96 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar donaciones..." 
+              value={donationSearchQuery}
+              onChange={(e) => setDonationSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {locations
+            .filter(l => l.type === 'donation' && (
+              !donationSearchQuery || 
+              l.title.toLowerCase().includes(donationSearchQuery.toLowerCase()) || 
+              l.description.toLowerCase().includes(donationSearchQuery.toLowerCase()) ||
+              (l.address && l.address.toLowerCase().includes(donationSearchQuery.toLowerCase()))
+            ))
+            .slice(0, donationSearchQuery ? undefined : 20)
+            .map((loc) => (
+              <div key={loc.id} className="border border-blue-100 rounded-xl p-4 flex flex-col justify-between bg-blue-50/30 hover:bg-blue-50/50 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2">{loc.title}</h3>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-3">{loc.description}</p>
+                </div>
+                <div className="flex flex-col gap-2 mt-auto">
+                  {loc.donationCategory && (
+                     <div className="flex gap-1 items-center text-xs text-blue-700 bg-blue-100 p-1 px-2 rounded-full w-max font-bold mb-1">
+                       {loc.donationCategory === 'food' ? 'Comida' : loc.donationCategory === 'water' ? 'Agua' : loc.donationCategory === 'medicine' ? 'Medicinas' : 'Ropa/Otros'}
+                     </div>
+                  )}
+                  {loc.address && (
+                    <div className="flex gap-1 items-start text-xs text-slate-500 bg-white/50 p-2 rounded">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-blue-400" />
+                      <span className="line-clamp-2">{loc.address}</span>
+                    </div>
+                  )}
+                  {loc.contact && (
+                    <div className="flex gap-1 items-center text-xs text-slate-500">
+                      <span className="font-semibold">Contacto:</span> {loc.contact}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">{new Date(loc.createdAt).toLocaleDateString()} {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+              </div>
+            ))}
+          {locations.filter(l => l.type === 'donation').length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 italic">No hay donaciones registradas.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Buscador de Transporte */}
+      <div id="transport-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center shrink-0">
+              <Truck className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Buscador de Transporte</h2>
+              <p className="text-sm text-slate-500">Busca transporte disponible por descripción o ubicación.</p>
+            </div>
+          </div>
+          <div className="w-full md:w-96 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar transporte..." 
+              value={transportSearchQuery}
+              onChange={(e) => setTransportSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {locations
+            .filter(l => l.type === 'transport' && (
+              !transportSearchQuery || 
+              l.title.toLowerCase().includes(transportSearchQuery.toLowerCase()) || 
+              l.description.toLowerCase().includes(transportSearchQuery.toLowerCase()) ||
+              (l.address && l.address.toLowerCase().includes(transportSearchQuery.toLowerCase()))
+            ))
+            .slice(0, transportSearchQuery ? undefined : 20)
+            .map((loc) => (
+              <div key={loc.id} className="border border-purple-100 rounded-xl p-4 flex flex-col justify-between bg-purple-50/30 hover:bg-purple-50/50 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-purple-500" />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2">{loc.title}</h3>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-3">{loc.description}</p>
+                </div>
+                <div className="flex flex-col gap-2 mt-auto">
+                  {loc.address && (
+                    <div className="flex gap-1 items-start text-xs text-slate-500 bg-white/50 p-2 rounded">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-purple-400" />
+                      <span className="line-clamp-2">{loc.address}</span>
+                    </div>
+                  )}
+                  {loc.contact && (
+                    <div className="flex gap-1 items-center text-xs text-slate-500">
+                      <span className="font-semibold">Contacto:</span> {loc.contact}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">{new Date(loc.createdAt).toLocaleDateString()} {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+              </div>
+            ))}
+          {locations.filter(l => l.type === 'transport').length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 italic">No hay transportes registrados.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Buscador de Centros WiFi */}
+      <div id="wifi-search" className="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0">
+              <Wifi className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Buscador de Centros WiFi</h2>
+              <p className="text-sm text-slate-500">Busca puntos de conexión a internet o llamadas.</p>
+            </div>
+          </div>
+          <div className="w-full md:w-96 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar puntos WiFi..." 
+              value={wifiSearchQuery}
+              onChange={(e) => setWifiSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {locations
+            .filter(l => l.type === 'wifi' && (
+              !wifiSearchQuery || 
+              l.title.toLowerCase().includes(wifiSearchQuery.toLowerCase()) || 
+              l.description.toLowerCase().includes(wifiSearchQuery.toLowerCase()) ||
+              (l.address && l.address.toLowerCase().includes(wifiSearchQuery.toLowerCase()))
+            ))
+            .slice(0, wifiSearchQuery ? undefined : 20)
+            .map((loc) => (
+              <div key={loc.id} className="border border-orange-100 rounded-xl p-4 flex flex-col justify-between bg-orange-50/30 hover:bg-orange-50/50 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2">{loc.title}</h3>
+                  </div>
+                  <p className="text-xs text-slate-600 mb-3 line-clamp-3">{loc.description}</p>
+                </div>
+                <div className="flex flex-col gap-2 mt-auto">
+                  {loc.address && (
+                    <div className="flex gap-1 items-start text-xs text-slate-500 bg-white/50 p-2 rounded">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-orange-400" />
+                      <span className="line-clamp-2">{loc.address}</span>
+                    </div>
+                  )}
+                  {loc.contact && (
+                    <div className="flex gap-1 items-center text-xs text-slate-500">
+                      <span className="font-semibold">Contacto:</span> {loc.contact}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">{new Date(loc.createdAt).toLocaleDateString()} {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+              </div>
+            ))}
+          {locations.filter(l => l.type === 'wifi').length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 italic">No hay puntos WiFi registrados.</div>
+          )}
+        </div>
+      </div>
+
       {/* Footer with Larger Links */}
       <footer className="mt-4 pt-4 border-t border-slate-200 shrink-0 bg-white p-4 rounded-2xl shadow-sm">
         <div className="mb-4">
@@ -677,40 +1033,102 @@ export default function App() {
         donation={selectedDonation}
       />
 
-      {isCollectionCenterDialogOpen && (
+      {isActionMenuOpen && (
         <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
             <div className="p-6 text-center">
-              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Building className="w-8 h-8" />
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                actionMenuType === 'collection_center' ? 'bg-indigo-100 text-indigo-600' :
+                actionMenuType === 'shelter' ? 'bg-green-100 text-green-600' :
+                actionMenuType === 'donation' ? 'bg-blue-100 text-blue-600' :
+                actionMenuType === 'transport' ? 'bg-purple-100 text-purple-600' :
+                actionMenuType === 'wifi' ? 'bg-orange-100 text-orange-600' :
+                'bg-red-100 text-red-600'
+              }`}>
+                {actionMenuType === 'collection_center' && <Building className="w-8 h-8" />}
+                {actionMenuType === 'shelter' && <Home className="w-8 h-8" />}
+                {actionMenuType === 'donation' && <Package className="w-8 h-8" />}
+                {actionMenuType === 'transport' && <Truck className="w-8 h-8" />}
+                {actionMenuType === 'wifi' && <Wifi className="w-8 h-8" />}
+                {actionMenuType === 'missing_person' && <UserX className="w-8 h-8" />}
               </div>
-              <h2 className="text-xl font-bold text-slate-800 mb-2">Centros de Acopio</h2>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">
+                {actionMenuType === 'collection_center' ? 'Centros de Acopio' :
+                 actionMenuType === 'shelter' ? 'Refugios' :
+                 actionMenuType === 'donation' ? 'Donaciones' :
+                 actionMenuType === 'transport' ? 'Transporte' :
+                 actionMenuType === 'wifi' ? 'Centros WiFi' :
+                 'Personas Desaparecidas'}
+              </h2>
               <p className="text-sm text-slate-600 mb-6">¿Qué deseas hacer?</p>
               
               <div className="flex flex-col gap-3">
                 <button 
                   onClick={() => {
-                    setIsCollectionCenterDialogOpen(false);
-                    handleActionClick('collection_center');
+                    setIsActionMenuOpen(false);
+                    handleActionClick(actionMenuType);
                   }}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-200"
+                  className={`w-full text-white font-bold py-3 rounded-xl transition-colors shadow-lg ${
+                    actionMenuType === 'collection_center' ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200' :
+                    actionMenuType === 'shelter' ? 'bg-green-600 hover:bg-green-700 shadow-green-200' :
+                    actionMenuType === 'donation' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-200' :
+                    actionMenuType === 'transport' ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200' :
+                    actionMenuType === 'wifi' ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-200' :
+                    'bg-red-600 hover:bg-red-700 shadow-red-200'
+                  }`}
                 >
-                  Registrar Centro de Acopio
+                  Registrar {
+                    actionMenuType === 'collection_center' ? 'Centro' :
+                    actionMenuType === 'shelter' ? 'Refugio' :
+                    actionMenuType === 'donation' ? 'Donación' :
+                    actionMenuType === 'transport' ? 'Transporte' :
+                    actionMenuType === 'wifi' ? 'Punto WiFi' :
+                    'Reporte'
+                  }
                 </button>
                 <button 
                   onClick={() => {
-                    setIsCollectionCenterDialogOpen(false);
-                    setFilter('collection_center');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setIsActionMenuOpen(false);
+                    setFilter(actionMenuType === 'missing_person' ? 'all' : actionMenuType);
+                    setTimeout(() => {
+                      const searchIdMap: Record<string, string> = {
+                        'collection_center': 'collection-center-search',
+                        'shelter': 'shelter-search',
+                        'donation': 'donation-search',
+                        'transport': 'transport-search',
+                        'wifi': 'wifi-search',
+                        'missing_person': 'missing-person-search'
+                      };
+                      const targetId = searchIdMap[actionMenuType];
+                      if (targetId) {
+                        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+                      } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }
+                    }, 100);
                   }}
-                  className="w-full bg-white hover:bg-slate-50 text-indigo-700 border-2 border-indigo-200 font-bold py-3 rounded-xl transition-colors"
+                  className={`w-full bg-white font-bold py-3 rounded-xl transition-colors border-2 ${
+                    actionMenuType === 'collection_center' ? 'hover:bg-indigo-50 text-indigo-700 border-indigo-200' :
+                    actionMenuType === 'shelter' ? 'hover:bg-green-50 text-green-700 border-green-200' :
+                    actionMenuType === 'donation' ? 'hover:bg-blue-50 text-blue-700 border-blue-200' :
+                    actionMenuType === 'transport' ? 'hover:bg-purple-50 text-purple-700 border-purple-200' :
+                    actionMenuType === 'wifi' ? 'hover:bg-orange-50 text-orange-700 border-orange-200' :
+                    'hover:bg-red-50 text-red-700 border-red-200'
+                  }`}
                 >
-                  Buscar Centro de Acopio
+                  Buscar {
+                    actionMenuType === 'collection_center' ? 'Centro' :
+                    actionMenuType === 'shelter' ? 'Refugios' :
+                    actionMenuType === 'donation' ? 'Donaciones' :
+                    actionMenuType === 'transport' ? 'Transporte' :
+                    actionMenuType === 'wifi' ? 'Puntos WiFi' :
+                    'Personas'
+                  }
                 </button>
               </div>
               
               <button 
-                onClick={() => setIsCollectionCenterDialogOpen(false)}
+                onClick={() => setIsActionMenuOpen(false)}
                 className="mt-6 text-sm text-slate-500 font-medium hover:text-slate-800"
               >
                 Cancelar
