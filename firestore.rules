@@ -10,14 +10,18 @@ service cloud.firestore {
     // Validation Helper
     function isValidLocation(data) {
       return data.keys().hasAll(['type', 'lat', 'lng', 'title', 'description', 'createdAt'])
-        && (data.type == 'shelter' || data.type == 'affected_zone')
+        && (data.type in ['shelter', 'affected_zone', 'donation', 'transport', 'wifi', 'missing_person'])
         && data.lat is number
         && data.lng is number
-        && data.title is string && data.title.size() > 0 && data.title.size() <= 100
-        && data.description is string && data.description.size() > 0 && data.description.size() <= 500
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.description is string && data.description.size() > 0 && data.description.size() <= 2000
         && data.createdAt is number
         && (!('contact' in data) || (data.contact is string && data.contact.size() <= 100))
-        && (!('capacity' in data) || (data.capacity is number && data.capacity >= 1 && data.capacity <= 1000));
+        && (!('capacity' in data) || (data.capacity is number && data.capacity >= 1 && data.capacity <= 1000))
+        && (!('donationCategory' in data) || (data.donationCategory is string))
+        && (!('photoUrl' in data) || (data.photoUrl is string))
+        && (!('status' in data) || (data.status is string))
+        && (!('address' in data) || (data.address is string));
     }
 
     match /locations/{locationId} {
@@ -25,11 +29,19 @@ service cloud.firestore {
       allow read: if true;
       
       // Allow anyone to create a location if it matches the schema
-      // In a real app we'd require auth, but this is a public emergency tool
       allow create: if isValidLocation(request.resource.data);
       
-      // Do not allow updates or deletes from the client for now
-      allow update, delete: if false;
+      // Allow updates to change status
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      
+      allow delete: if false;
+    }
+
+    match /claims/{claimId} {
+      // Allow anyone to create a claim
+      allow create: if true; // Basic rule for now, can be hardened
+      
+      allow read, update, delete: if false;
     }
   }
 }

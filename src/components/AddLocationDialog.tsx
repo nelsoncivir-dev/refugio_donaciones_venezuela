@@ -5,7 +5,7 @@ import { X, Camera, MapPin, Map as MapIcon, Image as ImageIcon, Truck } from 'lu
 interface AddLocationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any) => Promise<void> | void;
   lat: number | null;
   lng: number | null;
   preselectedType?: LocationType;
@@ -23,6 +23,7 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
   const [photo, setPhoto] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [addressMode, setAddressMode] = useState(false);
+  const [capturedAddress, setCapturedAddress] = useState<string | null>(null);
   const [addressFields, setAddressFields] = useState({
     estado: '',
     municipio: '',
@@ -32,6 +33,8 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
   });
   const [isGeocoding, setIsGeocoding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -82,8 +85,19 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
   const handleGetCurrentLocation = () => {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         onUpdateCoords(position.coords.latitude, position.coords.longitude);
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            setCapturedAddress(data.display_name);
+          } else {
+            setCapturedAddress(`Lat: ${position.coords.latitude.toFixed(4)}, Lng: ${position.coords.longitude.toFixed(4)}`);
+          }
+        } catch (error) {
+          setCapturedAddress(`Lat: ${position.coords.latitude.toFixed(4)}, Lng: ${position.coords.longitude.toFixed(4)}`);
+        }
         setIsLocating(false);
       },
       (error) => {
@@ -111,6 +125,14 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
       const data = await response.json();
       if (data && data.length > 0) {
         onUpdateCoords(parseFloat(data[0].lat), parseFloat(data[0].lon));
+        const addressString = [
+          addressFields.calle, 
+          addressFields.referencia ? `(Ref: ${addressFields.referencia})` : '',
+          addressFields.parroquia, 
+          addressFields.municipio, 
+          addressFields.estado
+        ].filter(Boolean).join(', ');
+        setCapturedAddress(addressString);
         setAddressMode(false);
       } else {
         alert("No se pudo encontrar la dirección exacta en el mapa. Puedes intentar elegir la ubicación manualmente en el mapa.");
@@ -123,12 +145,14 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!lat || !lng) {
       alert("Por favor, selecciona una ubicación para el reporte.");
       return;
     }
+
+    setIsSubmitting(true);
 
     const payload: any = {
       type,
@@ -166,15 +190,25 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
       payload.address = addressString;
     }
 
-    onSubmit(payload);
-    
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setContact('');
-    setCapacity('');
-    setPhoto(null);
-    setAddressFields({ estado: '', municipio: '', parroquia: '', calle: '', referencia: '' });
+    try {
+      await onSubmit(payload);
+      alert("¡La acción se ha guardado correctamente!");
+      
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setContact('');
+      setCapacity('');
+      setPhoto(null);
+      setCapturedAddress(null);
+      setAddressFields({ estado: '', municipio: '', parroquia: '', calle: '', referencia: '' });
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error al guardar la información. Por favor intenta nuevamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const typeConfig = {
@@ -225,14 +259,21 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
                 1. Ubicación <span className="text-red-500">*</span>
               </label>
               {lat && lng ? (
-                <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
-                  <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
-                    <MapPin className="w-4 h-4" />
-                    Ubicación seleccionada
+                <div className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-slate-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
+                      <MapPin className="w-4 h-4" />
+                      Ubicación capturada correctamente
+                    </div>
+                    <button type="button" onClick={() => { onUpdateCoords(null, null); setCapturedAddress(null); }} className="text-xs text-blue-600 font-bold hover:underline">
+                      Cambiar
+                    </button>
                   </div>
-                  <button type="button" onClick={() => onUpdateCoords(null, null)} className="text-xs text-blue-600 font-bold hover:underline">
-                    Cambiar
-                  </button>
+                  {capturedAddress && (
+                    <p className="text-xs text-slate-600 font-medium bg-slate-50 p-2 rounded border border-slate-100">
+                      {capturedAddress}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
@@ -449,9 +490,10 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
           <button 
             type="submit" 
             form="report-form"
-            className={`px-6 py-2 text-sm font-bold text-white rounded-lg transition-colors shadow-lg ${type === 'shelter' ? 'bg-green-600 hover:bg-green-700 shadow-green-200' : type === 'donation' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-200' : type === 'transport' ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200' : type === 'wifi' ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-200' : 'bg-red-600 hover:bg-red-700 shadow-red-200'}`}
+            disabled={isSubmitting}
+            className={`px-6 py-2 text-sm font-bold text-white rounded-lg transition-colors shadow-lg disabled:opacity-70 ${type === 'shelter' ? 'bg-green-600 hover:bg-green-700 shadow-green-200' : type === 'donation' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-200' : type === 'transport' ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200' : type === 'wifi' ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-200' : 'bg-red-600 hover:bg-red-700 shadow-red-200'}`}
           >
-            Publicar
+            {isSubmitting ? 'Guardando...' : 'Publicar'}
           </button>
         </div>
 
