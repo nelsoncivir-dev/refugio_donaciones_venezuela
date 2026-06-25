@@ -1,5 +1,5 @@
 export type DonationCategory = 'food' | 'water' | 'clothes' | 'medical' | 'other';
-export type LocationType = 'shelter' | 'affected_zone' | 'donation' | 'transport' | 'wifi' | 'missing_person';
+export type LocationType = 'shelter' | 'affected_zone' | 'donation' | 'transport' | 'wifi' | 'missing_person' | 'collection_center';
 
 export interface ReportLocation {
   id: string;

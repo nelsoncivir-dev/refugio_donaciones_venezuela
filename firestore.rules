@@ -10,7 +10,7 @@ service cloud.firestore {
     // Validation Helper
     function isValidLocation(data) {
       return data.keys().hasAll(['type', 'lat', 'lng', 'title', 'description', 'createdAt'])
-        && (data.type in ['shelter', 'affected_zone', 'donation', 'transport', 'wifi', 'missing_person'])
+        && (data.type in ['shelter', 'affected_zone', 'donation', 'transport', 'wifi', 'missing_person', 'collection_center'])
         && data.lat is number
         && data.lng is number
         && data.title is string && data.title.size() > 0 && data.title.size() <= 200

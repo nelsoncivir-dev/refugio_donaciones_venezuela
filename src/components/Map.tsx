@@ -63,6 +63,15 @@ const wifiIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+const collectionCenterIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 
 interface MapProps {
   locations: ReportLocation[];
@@ -106,7 +115,7 @@ export default function Map({ locations, onMapClick, selectedLocation, onClaimDo
         <Marker 
           key={loc.id} 
           position={[loc.lat, loc.lng]}
-          icon={loc.type === 'shelter' ? shelterIcon : loc.type === 'donation' ? donationIcon : loc.type === 'transport' ? transportIcon : loc.type === 'wifi' ? wifiIcon : affectedIcon}
+          icon={loc.type === 'shelter' ? shelterIcon : loc.type === 'donation' ? donationIcon : loc.type === 'transport' ? transportIcon : loc.type === 'wifi' ? wifiIcon : loc.type === 'collection_center' ? collectionCenterIcon : affectedIcon}
         >
           <Popup>
             <div className="p-1 max-w-[250px]">
@@ -114,8 +123,8 @@ export default function Map({ locations, onMapClick, selectedLocation, onClaimDo
                 <img src={loc.photo} alt="Evidencia" className="w-full h-24 object-cover rounded-md mb-2 border border-gray-200" />
               )}
               <h3 className="font-bold text-lg mb-1 leading-tight">{loc.title}</h3>
-              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white mb-2 ${loc.type === 'shelter' ? 'bg-green-600' : loc.type === 'donation' ? 'bg-blue-600' : loc.type === 'transport' ? 'bg-purple-600' : 'bg-red-600'}`}>
-                {loc.type === 'shelter' ? 'Refugio Disponible' : loc.type === 'donation' ? 'Donación / Insumos' : loc.type === 'transport' ? 'Transporte' : 'Zona Afectada'}
+              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white mb-2 ${loc.type === 'shelter' ? 'bg-green-600' : loc.type === 'donation' ? 'bg-blue-600' : loc.type === 'transport' ? 'bg-purple-600' : loc.type === 'collection_center' ? 'bg-indigo-600' : 'bg-red-600'}`}>
+                {loc.type === 'shelter' ? 'Refugio Disponible' : loc.type === 'donation' ? 'Donación / Insumos' : loc.type === 'transport' ? 'Transporte' : loc.type === 'collection_center' ? 'Centro de Acopio' : 'Zona Afectada'}
               </span>
               <p className="text-sm mb-2 text-gray-700 leading-snug">{loc.description}</p>
               

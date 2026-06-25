@@ -5,16 +5,17 @@ import { LocationType, ReportLocation } from './types';
 import Map from './components/Map';
 import AddLocationDialog from './components/AddLocationDialog';
 import ClaimDonationDialog from './components/ClaimDonationDialog';
-import { AlertTriangle, Home, Package, Share2, Search, Truck, MapPin, Wifi, UserX, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Home, Package, Share2, Search, Truck, MapPin, Wifi, UserX, CheckCircle, Building } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
 export default function App() {
   const [locations, setLocations] = useState<ReportLocation[]>([]); // state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCollectionCenterDialogOpen, setIsCollectionCenterDialogOpen] = useState(false);
   const [dialogPreselectedType, setDialogPreselectedType] = useState<LocationType>('shelter');
   const [selectedCoords, setSelectedCoords] = useState<{lat: number, lng: number} | null>(null);
-  const [filter, setFilter] = useState<'all' | 'shelter' | 'missing_person' | 'donation' | 'transport' | 'wifi'>('all');
+  const [filter, setFilter] = useState<'all' | 'shelter' | 'missing_person' | 'donation' | 'transport' | 'wifi' | 'collection_center'>('all');
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [missingSearchQuery, setMissingSearchQuery] = useState('');
@@ -257,8 +258,23 @@ export default function App() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, staggerChildren: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 shrink-0"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 shrink-0"
         >
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsCollectionCenterDialogOpen(true)}
+            className="bg-indigo-600 border-2 border-indigo-500 rounded-2xl p-4 transition-shadow text-left flex flex-col group shadow-lg hover:shadow-xl"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
+                <Building className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </div>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Centro de Acopio</p>
+            </div>
+            <p className="text-[10px] text-indigo-100 font-medium">Recolección y entrega</p>
+          </motion.button>
+
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -269,9 +285,9 @@ export default function App() {
               <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
                 <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </div>
-              <p className="font-bold text-white text-[15px] sm:text-base leading-tight">Ofrecer Refugio</p>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Ofrecer Refugio</p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-green-100 font-medium">Alojamiento y ayuda</p>
+            <p className="text-[10px] text-green-100 font-medium">Alojamiento y ayuda</p>
           </motion.button>
           
           <motion.button 
@@ -284,9 +300,9 @@ export default function App() {
               <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
                 <Package className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </div>
-              <p className="font-bold text-white text-[15px] sm:text-base leading-tight">Ofrecer Donación</p>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Ofrecer Donación</p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-blue-100 font-medium">Comida, Agua, Insumos</p>
+            <p className="text-[10px] text-blue-100 font-medium">Comida, Agua, Insumos</p>
           </motion.button>
 
           <motion.button 
@@ -299,9 +315,9 @@ export default function App() {
               <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
                 <Truck className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </div>
-              <p className="font-bold text-white text-[15px] sm:text-base leading-tight">Ofrecer Transporte</p>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Ofrecer Transporte</p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-purple-100 font-medium">Traslado de insumos o personas</p>
+            <p className="text-[10px] text-purple-100 font-medium">Traslado de insumos o personas</p>
           </motion.button>
 
           <motion.button 
@@ -314,9 +330,9 @@ export default function App() {
               <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
                 <Wifi className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </div>
-              <p className="font-bold text-white text-[15px] sm:text-base leading-tight">Centro WiFi</p>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Centro WiFi</p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-orange-100 font-medium">Punto de conexión a internet</p>
+            <p className="text-[10px] text-orange-100 font-medium">Punto de conexión a internet</p>
           </motion.button>
 
           <motion.button 
@@ -329,9 +345,9 @@ export default function App() {
               <div className="w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center shrink-0">
                 <UserX className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </div>
-              <p className="font-bold text-white text-[15px] sm:text-base leading-tight">Desaparecido</p>
+              <p className="font-bold text-white text-[13px] sm:text-[15px] leading-tight">Desaparecido</p>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-red-100 font-medium">Reportar o buscar persona</p>
+            <p className="text-[10px] text-red-100 font-medium">Reportar o buscar persona</p>
           </motion.button>
         </motion.div>
 
@@ -421,6 +437,12 @@ export default function App() {
                 >
                   WiFi
                 </span>
+                <span 
+                  onClick={(e) => { e.stopPropagation(); setFilter('collection_center'); }} 
+                  className={`pointer-events-auto cursor-pointer px-4 py-2 rounded-full shadow-md text-[10px] sm:text-xs font-bold uppercase border transition-colors ${filter === 'collection_center' ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white border-slate-100 text-slate-700 hover:bg-slate-50'}`}
+                >
+                  Acopio
+                </span>
               </div>
               {isAddingMode && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur px-6 py-3 rounded-full shadow-xl border-2 border-blue-400 z-[1000] text-sm font-bold text-blue-700 animate-pulse pointer-events-none">
@@ -486,39 +508,40 @@ export default function App() {
               )}
 
               {/* Refugios y Ayudas */}
-              {(filter === 'all' || filter === 'shelter' || filter === 'donation' || filter === 'transport' || filter === 'wifi') && (
-                <div className={`bg-white border rounded-2xl p-4 shadow-sm flex flex-col ${filter === 'shelter' ? 'border-green-100' : filter === 'donation' ? 'border-blue-100' : filter === 'transport' ? 'border-purple-100' : filter === 'wifi' ? 'border-orange-100' : 'border-slate-100'}`}>
+              {(filter === 'all' || filter === 'shelter' || filter === 'donation' || filter === 'transport' || filter === 'wifi' || filter === 'collection_center') && (
+                <div className={`bg-white border rounded-2xl p-4 shadow-sm flex flex-col ${filter === 'shelter' ? 'border-green-100' : filter === 'donation' ? 'border-blue-100' : filter === 'transport' ? 'border-purple-100' : filter === 'wifi' ? 'border-orange-100' : filter === 'collection_center' ? 'border-indigo-100' : 'border-slate-100'}`}>
                   <div className="flex justify-between items-center mb-3 shrink-0">
                     <h2 className="font-bold text-slate-800 flex items-center gap-2">
                       {filter === 'shelter' ? <><Home className="w-4 h-4 text-green-500" /> Refugios</> : 
                        filter === 'donation' ? <><Package className="w-4 h-4 text-blue-500" /> Donaciones</> : 
                        filter === 'transport' ? <><Truck className="w-4 h-4 text-purple-500" /> Transporte</> : 
                        filter === 'wifi' ? <><Wifi className="w-4 h-4 text-orange-500" /> WiFi / Starlink</> : 
-                       <><Home className="w-4 h-4 text-green-500" /> Refugios y Ayudas</>}
+                       filter === 'collection_center' ? <><Building className="w-4 h-4 text-indigo-500" /> Centros de Acopio</> :
+                       <><Home className="w-4 h-4 text-green-500" /> Ayudas y Acopio</>}
                     </h2>
                   </div>
                   <div className="space-y-2">
-                    {filteredLocations.filter(l => l.type === 'shelter' || l.type === 'donation' || l.type === 'transport' || l.type === 'wifi').slice(0, 15).map((loc, i) => (
+                    {filteredLocations.filter(l => l.type === 'shelter' || l.type === 'donation' || l.type === 'transport' || l.type === 'wifi' || l.type === 'collection_center').slice(0, 15).map((loc, i) => (
                       <motion.div 
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
                         key={loc.id} 
-                        className={`flex items-center gap-3 p-2 rounded-xl border hover:shadow-md transition-all cursor-pointer ${loc.type === 'shelter' ? 'bg-green-50/50 border-green-100 hover:bg-green-50' : loc.type === 'transport' ? 'bg-purple-50/50 border-purple-100 hover:bg-purple-50' : loc.type === 'wifi' ? 'bg-orange-50/50 border-orange-100 hover:bg-orange-50' : 'bg-blue-50/50 border-blue-100 hover:bg-blue-50'}`}
+                        className={`flex items-center gap-3 p-2 rounded-xl border hover:shadow-md transition-all cursor-pointer ${loc.type === 'shelter' ? 'bg-green-50/50 border-green-100 hover:bg-green-50' : loc.type === 'transport' ? 'bg-purple-50/50 border-purple-100 hover:bg-purple-50' : loc.type === 'wifi' ? 'bg-orange-50/50 border-orange-100 hover:bg-orange-50' : loc.type === 'collection_center' ? 'bg-indigo-50/50 border-indigo-100 hover:bg-indigo-50' : 'bg-blue-50/50 border-blue-100 hover:bg-blue-50'}`}
                         onClick={() => setSelectedCoords({ lat: loc.lat, lng: loc.lng })}
                       >
-                        <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center font-bold text-xs uppercase shadow-sm ${loc.type === 'shelter' ? 'bg-green-100 text-green-600' : loc.type === 'transport' ? 'bg-purple-100 text-purple-600' : loc.type === 'wifi' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
-                          {loc.type === 'shelter' ? <Home className="w-4 h-4" /> : loc.type === 'transport' ? <Truck className="w-4 h-4" /> : loc.type === 'wifi' ? <Wifi className="w-4 h-4" /> : <Package className="w-4 h-4" />}
+                        <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center font-bold text-xs uppercase shadow-sm ${loc.type === 'shelter' ? 'bg-green-100 text-green-600' : loc.type === 'transport' ? 'bg-purple-100 text-purple-600' : loc.type === 'wifi' ? 'bg-orange-100 text-orange-600' : loc.type === 'collection_center' ? 'bg-indigo-100 text-indigo-600' : 'bg-blue-100 text-blue-600'}`}>
+                          {loc.type === 'shelter' ? <Home className="w-4 h-4" /> : loc.type === 'transport' ? <Truck className="w-4 h-4" /> : loc.type === 'wifi' ? <Wifi className="w-4 h-4" /> : loc.type === 'collection_center' ? <Building className="w-4 h-4" /> : <Package className="w-4 h-4" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold text-slate-800 truncate">{loc.title}</p>
                           <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
-                            {loc.type === 'shelter' ? (loc.capacity ? `${loc.capacity} Cupos` : 'Refugio') : loc.type === 'transport' ? 'Transporte' : loc.type === 'wifi' ? 'WiFi' : 'Donación'} • {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            {loc.type === 'shelter' ? (loc.capacity ? `${loc.capacity} Cupos` : 'Refugio') : loc.type === 'transport' ? 'Transporte' : loc.type === 'wifi' ? 'WiFi' : loc.type === 'collection_center' ? 'Centro de Acopio' : 'Donación'} • {new Date(loc.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </p>
                         </div>
                       </motion.div>
                     ))}
-                     {filteredLocations.filter(l => l.type === 'shelter' || l.type === 'donation' || l.type === 'transport' || l.type === 'wifi').length === 0 && (
+                     {filteredLocations.filter(l => l.type === 'shelter' || l.type === 'donation' || l.type === 'transport' || l.type === 'wifi' || l.type === 'collection_center').length === 0 && (
                        <p className="text-xs text-slate-400 italic">No hay ayudas disponibles que coincidan con tu búsqueda.</p>
                     )}
                   </div>
@@ -653,6 +676,49 @@ export default function App() {
         onSubmit={handleClaimSubmit}
         donation={selectedDonation}
       />
+
+      {isCollectionCenterDialogOpen && (
+        <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Building className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">Centros de Acopio</h2>
+              <p className="text-sm text-slate-600 mb-6">¿Qué deseas hacer?</p>
+              
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => {
+                    setIsCollectionCenterDialogOpen(false);
+                    handleActionClick('collection_center');
+                  }}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-200"
+                >
+                  Registrar Centro de Acopio
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsCollectionCenterDialogOpen(false);
+                    setFilter('collection_center');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="w-full bg-white hover:bg-slate-50 text-indigo-700 border-2 border-indigo-200 font-bold py-3 rounded-xl transition-colors"
+                >
+                  Buscar Centro de Acopio
+                </button>
+              </div>
+              
+              <button 
+                onClick={() => setIsCollectionCenterDialogOpen(false)}
+                className="mt-6 text-sm text-slate-500 font-medium hover:text-slate-800"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -236,6 +236,11 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
       label: 'Reportar Desaparecido',
       activeClass: 'bg-red-50 border-red-300 text-red-700 ring-2 ring-red-200',
       btnClass: 'bg-red-600 hover:bg-red-700 shadow-red-200'
+    },
+    collection_center: {
+      label: 'Centro de Acopio',
+      activeClass: 'bg-indigo-50 border-indigo-300 text-indigo-700 ring-2 ring-indigo-200',
+      btnClass: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200'
     }
   };
 
@@ -394,7 +399,7 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none mb-3 text-sm"
-                placeholder={type === 'shelter' ? 'Nombre del Refugio / Familia' : type === 'donation' ? 'Ej. Se ofrecen 10 bolsas de comida' : type === 'transport' ? 'Ej. Camioneta pick-up disponible' : type === 'wifi' ? 'Nombre de red o ubicación del punto WiFi' : type === 'missing_person' ? 'Nombre y Apellido del Desaparecido' : 'Lugar o Zona Afectada'}
+                placeholder={type === 'collection_center' ? 'Nombre del Centro de Acopio' : type === 'shelter' ? 'Nombre del Refugio / Familia' : type === 'donation' ? 'Ej. Se ofrecen 10 bolsas de comida' : type === 'transport' ? 'Ej. Camioneta pick-up disponible' : type === 'wifi' ? 'Nombre de red o ubicación del punto WiFi' : type === 'missing_person' ? 'Nombre y Apellido del Desaparecido' : 'Lugar o Zona Afectada'}
               />
               
               <textarea 
@@ -403,7 +408,7 @@ export default function AddLocationDialog({ isOpen, onClose, onSubmit, lat, lng,
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none text-sm"
-                placeholder={type === 'shelter' ? 'Tengo 2 cuartos disponibles, hay agua potable...' : type === 'donation' ? 'Punto de entrega en la plaza central...' : type === 'transport' ? 'Ej. Puedo hacer viajes desde Caracas a Valencia los fines de semana...' : type === 'wifi' ? 'Ej. Starlink disponible de 8am a 6pm, sin contraseña...' : type === 'missing_person' ? 'Características físicas, ropa que llevaba, residencia o edificio donde vivía, última vez visto...' : 'Se necesita ayuda para remover escombros...'}
+                placeholder={type === 'collection_center' ? 'Qué están recibiendo, horarios de atención, qué no reciben...' : type === 'shelter' ? 'Tengo 2 cuartos disponibles, hay agua potable...' : type === 'donation' ? 'Punto de entrega en la plaza central...' : type === 'transport' ? 'Ej. Puedo hacer viajes desde Caracas a Valencia los fines de semana...' : type === 'wifi' ? 'Ej. Starlink disponible de 8am a 6pm, sin contraseña...' : type === 'missing_person' ? 'Características físicas, ropa que llevaba, residencia o edificio donde vivía, última vez visto...' : 'Se necesita ayuda para remover escombros...'}
               />
             </div>
 
