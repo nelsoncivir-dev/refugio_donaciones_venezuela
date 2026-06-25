@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "Location": {
+      "title": "Location",
+      "description": "A reported emergency location or shelter",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["shelter", "affected_zone"] },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "contact": { "type": "string" },
+        "capacity": { "type": "number" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["type", "lat", "lng", "title", "description", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/locations/{locationId}": {
+      "schema": { "$ref": "#/entities/Location" },
+      "description": "Stores reports of emergency zones and shelters."
+    }
+  }
+}

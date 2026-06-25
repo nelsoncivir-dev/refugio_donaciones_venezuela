@@ -1,0 +1,10 @@
+{
+  "name": "Refugios Venezuela",
+  "description": "Plataforma en tiempo real para localizar y ofrecer refugios, y reportar zonas afectadas por emergencias.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

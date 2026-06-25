@@ -1,0 +1,36 @@
+// Rules updated
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Validation Helper
+    function isValidLocation(data) {
+      return data.keys().hasAll(['type', 'lat', 'lng', 'title', 'description', 'createdAt'])
+        && (data.type == 'shelter' || data.type == 'affected_zone')
+        && data.lat is number
+        && data.lng is number
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 100
+        && data.description is string && data.description.size() > 0 && data.description.size() <= 500
+        && data.createdAt is number
+        && (!('contact' in data) || (data.contact is string && data.contact.size() <= 100))
+        && (!('capacity' in data) || (data.capacity is number && data.capacity >= 1 && data.capacity <= 1000));
+    }
+
+    match /locations/{locationId} {
+      // Allow anyone to read the locations
+      allow read: if true;
+      
+      // Allow anyone to create a location if it matches the schema
+      // In a real app we'd require auth, but this is a public emergency tool
+      allow create: if isValidLocation(request.resource.data);
+      
+      // Do not allow updates or deletes from the client for now
+      allow update, delete: if false;
+    }
+  }
+}
+// force sync
